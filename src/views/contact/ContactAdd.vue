@@ -3,7 +3,7 @@
     <h2 class="mb-4">Ajouter un Nouveau Contact</h2>
     <ContactForm @submitForm="addContact" />
   </div>
-</template>
+</template>+
 
 <script>
 import ContactForm from './components/ContactForm.vue';

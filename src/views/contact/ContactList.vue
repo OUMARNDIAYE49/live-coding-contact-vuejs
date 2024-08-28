@@ -68,7 +68,6 @@ export default {
 </script>
 
 
-
 <style scoped>
 .contacts-container {
   background: #ffffff; /* Assurez-vous que cette couleur correspond à la couleur de fond de la page d'accueil */
