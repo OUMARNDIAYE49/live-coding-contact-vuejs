@@ -22,10 +22,8 @@
       </li>
     </ul>
 
-    <!-- Bouton pour ajouter un contact utilisant router-link -->
     <router-link to="/contact/new" class="btn btn-success mt-3">Ajouter un contact</router-link>
 
-    <!-- Modale pour afficher les détails -->
     <div v-if="selectedContact" class="modal">
       <div class="modal-content">
         <span class="close" @click="selectedContact = null">&times;</span>
@@ -46,10 +44,11 @@ export default {
   name: 'ContactsList',
   setup() {
     const contactStore = useContactStore();
-    const contacts = contactStore.contacts; // Utilisation du store pour obtenir les contacts
+    const contacts = contactStore.contacts;
     const selectedContact = ref(null);
 
     const removeContact = (id) => {
+      console.log("ID du contact à supprimer :", id); // Pour débogage
       contactStore.removeContact(id);
     };
 
@@ -58,7 +57,6 @@ export default {
     };
 
     const editContact = (contact) => {
-      // Implémentez la logique pour modifier un contact
       alert(`Modifier le contact: ${contact.name}`);
     };
 
@@ -67,10 +65,9 @@ export default {
 };
 </script>
 
-
 <style scoped>
 .contacts-container {
-  background: #ffffff; /* Assurez-vous que cette couleur correspond à la couleur de fond de la page d'accueil */
+  background: #ffffff;
   border-radius: 10px;
   padding: 20px;
 }
@@ -93,11 +90,11 @@ h2 {
 
 .button-group {
   display: flex;
-  gap: 10px; /* Espace entre les boutons */
+  gap: 10px;
 }
 
 .btn-primary {
-  background-color: #007bff; /* Couleur de fond pour 'Voir détails' */
+  background-color: #007bff;
   border-color: #007bff;
 }
 
@@ -107,7 +104,7 @@ h2 {
 }
 
 .btn-secondary {
-  background-color: #6c757d; /* Couleur de fond pour 'Modifier' */
+  background-color: #6c757d;
   border-color: #6c757d;
 }
 
@@ -127,7 +124,7 @@ h2 {
 }
 
 .btn-success {
-  background-color: #28a745; /* Couleur de fond pour 'Ajouter' */
+  background-color: #28a745;
   border-color: #28a745;
 }
 
@@ -136,7 +133,6 @@ h2 {
   border-color: #1e7e34;
 }
 
-/* Styles pour la modale */
 .modal {
   display: block;
   position: fixed;
