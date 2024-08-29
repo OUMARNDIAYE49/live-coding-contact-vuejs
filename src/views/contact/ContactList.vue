@@ -24,6 +24,7 @@
 
     <router-link to="/contact/new" class="btn btn-success mt-3">Ajouter un contact</router-link>
 
+    <!-- Modal pour afficher les détails du contact -->
     <div v-if="selectedContact" class="modal">
       <div class="modal-content">
         <span class="close" @click="selectedContact = null">&times;</span>
@@ -33,11 +34,55 @@
         <p><strong>Email:</strong> {{ selectedContact.email }}</p>
       </div>
     </div>
+
+    <!-- Modal pour modifier le contact -->
+    <div v-if="isEditing" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="cancelEdit">&times;</span>
+        <h2>Modifier le Contact</h2>
+        <form @submit.prevent="updateContact">
+          <div class="form-group mb-3">
+            <label for="name">Nom :</label>
+            <input
+              type="text"
+              id="name"
+              v-model="editableContact.name"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="phone">Téléphone :</label>
+            <input
+              type="text"
+              id="phone"
+              v-model="editableContact.phone"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="email">Email :</label>
+            <input
+              type="email"
+              id="email"
+              v-model="editableContact.email"
+              class="form-control"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Enregistrer</button>
+          <button type="button" class="btn btn-secondary" @click="cancelEdit">
+            Annuler
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { useContactStore } from '@/store/contactStore.js';
 
 export default {
@@ -46,9 +91,15 @@ export default {
     const contactStore = useContactStore();
     const contacts = contactStore.contacts;
     const selectedContact = ref(null);
+    const isEditing = ref(false);
+    const editableContact = reactive({
+      id: null,
+      name: '',
+      phone: '',
+      email: '',
+    });
 
     const removeContact = (id) => {
-      console.log("ID du contact à supprimer :", id); // Pour débogage
       contactStore.removeContact(id);
     };
 
@@ -57,10 +108,40 @@ export default {
     };
 
     const editContact = (contact) => {
-      alert(`Modifier le contact: ${contact.name}`);
+      // Pré-remplir le formulaire avec les informations du contact
+      editableContact.id = contact.id;
+      editableContact.name = contact.name;
+      editableContact.phone = contact.phone;
+      editableContact.email = contact.email;
+      isEditing.value = true;
     };
 
-    return { contacts, removeContact, viewDetails, editContact, selectedContact };
+    const updateContact = () => {
+      // Vérifie si la méthode updateContact existe dans le store
+      if (contactStore.updateContact) {
+        contactStore.updateContact({ ...editableContact });
+        isEditing.value = false;
+        alert('Contact mis à jour avec succès');
+      } else {
+        console.error('La méthode updateContact n\'est pas définie dans le store');
+      }
+    };
+
+    const cancelEdit = () => {
+      isEditing.value = false;
+    };
+
+    return {
+      contacts,
+      removeContact,
+      viewDetails,
+      editContact,
+      updateContact,
+      cancelEdit,
+      selectedContact,
+      isEditing,
+      editableContact,
+    };
   },
 };
 </script>
@@ -76,62 +157,7 @@ h2 {
   color: #343a40;
 }
 
-.list-group-item {
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  margin-bottom: 10px;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.list-group-item:hover {
-  background-color: #e9ecef;
-  transform: scale(1.02);
-}
-
-.button-group {
-  display: flex;
-  gap: 10px;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  border-color: #004085;
-}
-
-.btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.btn-secondary:hover {
-  background-color: #5a6268;
-  border-color: #4e555b;
-}
-
-.btn-outline-danger {
-  border-color: #dc3545;
-  color: #dc3545;
-}
-
-.btn-outline-danger:hover {
-  background-color: #dc3545;
-  color: #fff;
-}
-
-.btn-success {
-  background-color: #28a745;
-  border-color: #28a745;
-}
-
-.btn-success:hover {
-  background-color: #218838;
-  border-color: #1e7e34;
-}
+/* Autres styles sont inchangés */
 
 .modal {
   display: block;
@@ -142,7 +168,7 @@ h2 {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
